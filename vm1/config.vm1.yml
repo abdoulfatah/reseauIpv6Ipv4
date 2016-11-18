@@ -1,0 +1,27 @@
+########################################################################
+# sudoedit /etc/ssh/sshd_config
+# avec sudo ansible-playbook -c local /vagrant/config.vm1.yml
+---
+- hosts: localhost
+  tasks:
+  - shell: ip route del default
+    ignore_errors: True
+  - shell: nmcli connection del "Connexion filaire 1"
+    ignore_errors: True  
+  - shell: nmcli connection del "Connexion filaire 2"
+    ignore_errors: True
+  - shell: nmcli connection del "ansible-eth1"
+    ignore_errors: True
+  - shell: nmcli connection del "ansible-eth2"
+    ignore_errors: True
+
+  
+  # IPv4 eth2
+  - shell: nmcli connection add ifname eth2 con-name ansible-eth2 type ethernet ip4 172.16.2.131/28
+  # IPv4 eth1
+  - shell: nmcli connection add ifname eth1 con-name ansible-eth1 type ethernet ip4 172.16.2.151/28
+  
+  
+  # IP FORWARD
+  # Set ip forwarding on in /proc and in the sysctl file and reload if necessary
+  - sysctl: name="net.ipv4.ip_forward" value=1 sysctl_set=yes state=present reload=yes

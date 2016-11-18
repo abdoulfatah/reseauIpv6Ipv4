@@ -1,0 +1,23 @@
+########################################################################
+# sudoedit /etc/ssh/sshd_config
+# avec sudo ansible-playbook -c local /vagrant/config.vm16.yml
+---
+- hosts: localhost
+  tasks:
+  - shell: ip route del default
+    ignore_errors: True
+  - shell: nmcli connection del "Connexion filaire 1"
+    ignore_errors: True
+  - shell: nmcli connection del "ansible-eth1"
+    ignore_errors: True
+  - shell: nmcli connection del "ansible-eth2"
+    ignore_errors: True
+      
+  # IPv4 eth1
+  # nmcli connection add ifname eth1 con-name ansible-eth1 type ethernet ip4 172.16.2.156/28 gw4 172.16.2.151
+  
+  # IPv6 eth2
+  - shell: nmcli connection add ifname eth2 con-name ansible-eth2 type ethernet ip6 fc00:1234:1::16/64 gw6 fc00:1234:1::26 
+  
+  # IP forward
+  - shell : sysctl -w net.ipv6.conf.all.forwarding=1
