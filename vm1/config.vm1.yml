@@ -22,8 +22,8 @@
   - shell: nmcli connection add ifname eth2 con-name ansible-eth2 type ethernet ip4 172.16.2.151/28
   
   #table de routage
-  - shell: sudo ip route add 172.16.2.176/28 via 172.16.2.132
-  - shell: sudo ip route add 172.16.2.160/28 via 172.16.2.132
+  - shell: sudo ip route add 172.16.2.176/28 via 172.16.2.156
+  #sudo ip route add 172.16.2.160/28 via 172.16.2.132
   
   
   # IP FORWARD
