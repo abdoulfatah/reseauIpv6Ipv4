@@ -15,8 +15,18 @@
   - shell: nmcli connection del "ansible-eth2"
     ignore_errors: True
     
+      # IPv4 eth2
+  - shell: nmcli connection add ifname eth2 con-name ansible-eth2 type ethernet ip4 172.16.2.186/28 gw4 172.16.2.183
+    
   - shell: nmcli connection add ifname eth1 con-name ansible-eth1 type ethernet ip6 fc00:1234:2::36/64 gw6 fc00:1234:2::26
+  
+  #table de routage
+  - shell: sudo ip route add 172.16.2.128/28 via 172.16.2.183
+  - shell: sudo ip route add 172.16.2.144/28 via 172.16.2.183
+  - shell: sudo ip route add 172.16.2.160/28 via 172.16.2.183
   
   # IP FORWARD
   # Set ip forwarding on in /proc and in the sysctl file and reload if necessary
-    - sysctl: name="net.ipv4.ip_forward" value=1 sysctl_set=yes state=present reload=yes
+  - sysctl: name="net.ipv4.ip_forward" value=1 sysctl_set=yes state=present reload=yes
+    
+    
