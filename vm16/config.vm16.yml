@@ -8,6 +8,8 @@
     ignore_errors: True
   - shell: nmcli connection del "Connexion filaire 1"
     ignore_errors: True
+  - shell: nmcli connection del "Connexion filaire 1"
+    ignore_errors: True
   - shell: nmcli connection del "ansible-eth1"
     ignore_errors: True
   - shell: nmcli connection del "ansible-eth2"
