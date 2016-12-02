@@ -1,0 +1,14 @@
+
+
+Notes
+-----
+
+Au début de chaque session il faut lancer la commande : 
+'VBoxManage setproperty machinefolder "/virtualbox/tmp"'
+pour mettre en local les dossier temporaires et ne pas surcharger le quota 
+personnel.
+
+Au démarrage d'une nouvelle VM, ne pas oublier de mettre à 'yes' la valeur de
+l'authentification par mot de passe dans /etc/ssh/sshd_conf sur la VM. Sinon 
+l'environnement de bureau déconne.
+
