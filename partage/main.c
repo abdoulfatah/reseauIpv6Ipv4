@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
     tun_fd = tun_alloc(interface);
 
     // configuration du tunnnel
-    sprintf(cmd, "/vagrant/tun_config.sh %s", interface);
+    sprintf(cmd, "sudo /vagrant/tun_config.sh %s", interface);
     system(cmd);
 
     // fork
