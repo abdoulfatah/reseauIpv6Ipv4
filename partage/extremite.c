@@ -1,16 +1,67 @@
 #include "extremite.h"
 
+//=============================================================================
+// Prototypes des fonctions privees
 
-// Proto a la volle
+void redirect_serveur(int src, int dst);
+void redirect_client(int src, int dst);
 
-void print_serveur(int f, char* hote, char* port);
+//=============================================================================
+// Definitions des fonctions privees
+
+void redirect_serveur(int src, int dst)
+{
+    ssize_t lu; /* nb d'octets reçus */
+    char tampon[MAXLIGNE+1];
+
+    do
+    {
+        lu = recv(src,tampon,MAXLIGNE,0);
+        if (lu > 0 )
+        {
+            tampon[lu] = '\0';
+            //printf("%s", msg);
+            send(dst, tampon, MAXLIGNE, 0);
+        }
+        else
+        {
+            break;
+        }
+    }
+    while ( 1 );
+
+    close(dst);
+}
+
+void redirect_client(int src, int dst)
+{
+    ssize_t size;
+    char* buffer = malloc (sizeof (char) * BUFFER_SIZE_MAX);
+
+    while (1)
+    {
+        // on lit la source
+        size = read (src, buffer, BUFFER_SIZE_MAX);
+        if(size == 0) // si src n'envoie plus
+        {
+            // on sort de la boucle
+            break;
+        }
+        // on recopie dans la socket
+        write (dst, buffer, size);
+    }
+
+    free (buffer);
+}
+
+
 
 
 // Impl
-void ext_out(char * port)
+void ext_out(char * port, int tun)
 {
-    int s,n; /* descripteurs de socket */
-    int len,on; /* utilitaires divers */
+    int s, n; /* descripteurs de socket */
+    int len, on; /* utilitaires divers */
     struct addrinfo * resol; /* résolution */
     struct addrinfo indic = {AI_PASSIVE, /* Toute interface */
                PF_INET6,SOCK_STREAM,0, /* IP mode connecté */
@@ -19,7 +70,6 @@ void ext_out(char * port)
     struct sockaddr_in6 client; /* adresse de socket du client */
     int err; /* code d'erreur */
 
-    fprintf(stderr,"Ecoute sur le port %s\n",port);
     err = getaddrinfo(NULL,port,&indic,&resol);
     if (err<0)
     {
@@ -83,52 +133,13 @@ void ext_out(char * port)
             fprintf(stderr,"accept! (%i) ip=%s port=%s\n",n,hotec,portc);
         }
         /* traitement */
-        print_serveur(n,hotec,portc);
+        redirect_serveur(n,tun);
     }
 }
 
 
-void print_serveur(int f, char* hote, char* port)
-{
-    ssize_t lu; /* nb d'octets reçus */
-    char msg[MAXLIGNE+1]; /* tampons pour les communications */
-    char tampon[MAXLIGNE+1];
-    int pid = getpid(); /* pid du processus */
-    int compteur=0;
 
-    /* message d'accueil */
-    snprintf(msg,MAXLIGNE,"Bonjour %s! (vous utilisez le port %s)\n",hote,port);
-    /* envoi du message d'accueil */
-    send(f,msg,strlen(msg),0);
-
-    do   /* Faire echo et logguer */
-    {
-        lu = recv(f,tampon,MAXLIGNE,0);
-        if (lu > 0 )
-        {
-            compteur++;
-            tampon[lu] = '\0';
-            /* log */
-            fprintf(stderr,"[%s:%s](%i): %3i :%s",hote,port,pid,compteur,tampon);
-            snprintf(msg,MAXLIGNE,"> %s",tampon);
-            /* echo vers le client */
-            printf("%s", msg);
-        }
-        else
-        {
-            break;
-        }
-    }
-    while ( 1 );
-
-    /* le correspondant a quitté */
-    send(f,CIAO,strlen(CIAO),0);
-    close(f);
-    fprintf(stderr,"[%s:%s](%i): Terminé.\n",hote,port,pid);
-}
-
-
-void ext_in(char * hote, char * port)
+void ext_in(char * hote, char * port, int tun)
 {
     void *addr;
     char ip[NI_MAXHOST], ipstr[INET6_ADDRSTRLEN];; /* adresse IPv4 en notation pointée */
@@ -171,45 +182,7 @@ void ext_in(char * hote, char * port)
     }
     freeaddrinfo(resol); /* /!\ Libération mémoire */
 
-    /* Session */
-    char tampon[MAXLIGNE + 3]; /* tampons pour les communications */
-    ssize_t lu;
-    int fini=0;
-    while( 1 )
-    {
-        /* Jusqu'à fermeture de la socket (ou de stdin)     */
-        /* recopier à l'écran ce qui est lu dans la socket  */
-        /* recopier dans la socket ce qui est lu dans stdin */
-
-        /* réception des données */
-        lu = recv(s,tampon,MAXLIGNE,0); /* bloquant */
-        if (lu == 0 )
-        {
-            fprintf(stderr,"Connexion terminée par l'hôte distant\n");
-            break; /* On sort de la boucle infinie */
-        }
-        tampon[lu] = '\0';
-        //printf("reçu: %s",tampon);
-        if ( fini == 1 )
-            break;  /* on sort de la boucle infinie*/
-
-        /* recopier dans la socket ce qui est entré au clavier */
-        if ( fgets(tampon,MAXLIGNE - 2,stdin) == NULL ) /* entrée standard fermée */
-        {
-            fini=1;
-            fprintf(stderr,"Connexion terminée !!\n");
-            fprintf(stderr,"Hôte distant informé...\n");
-            shutdown(s, SHUT_WR); /* terminaison explicite de la socket
-			     dans le sens client -> serveur */
-            /* On ne sort pas de la boucle tout de suite ... */
-        }
-        else     /* envoi des données */
-        {
-            send(s,tampon,strlen(tampon),0);
-        }
-    }
-    /* Destruction de la socket */
-    close(s);
+    redirect_client(tun, s);
 
     fprintf(stderr,"Fin de la session.\n");
 }
@@ -250,20 +223,4 @@ int tun_alloc(char *dev)
 }
 
 
-void tun_copy (int src, int dst)
-{
-    ssize_t size;
-    char* buffer = malloc (sizeof (char) * BUFFER_SIZE_MAX);
-
-    while (1)
-    {
-        printf ("Read:\n");
-        size = read (src, buffer, BUFFER_SIZE_MAX);
-
-        printf ("Write:\n");
-        write (dst, buffer, size);
-    }
-
-    free (buffer);
-}
 

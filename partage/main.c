@@ -3,65 +3,47 @@
 
 #include "extremite.h"
 
+#define PORT            "1234"
+#define INTERFACE_NAME  "tun0"
+
 int main(int argc, char* argv[])
 {
-    char * port = "1234";
-    char adresseIPv6[50];
+    char port[] = PORT;
+    char * adresseIPv6 = argv[1];
 
     int tun_fd;
-    int choix = 0;
-    char interface[] = "tun0";
+    char interface[] = INTERFACE_NAME;
 
-    do
+    char cmd[128];
+
+    // allocation du tunnel
+    tun_fd = tun_alloc(interface);
+
+    // configuration du tunnnel
+    sprintf(cmd, "/vagrant/tun_config.sh %s", interface);
+    system(cmd);
+
+    // fork
+    int process = fork();
+    if(process < 0)
     {
-        printf("Serveur(1)/Client(2)/pkill(3)\n");
-        scanf("%d",&choix);
-        switch(choix)
-        {
-        case 1 :
-            printf("Lancement du serveur sur le port %s... \n", port);
-            ext_out(port);
-            break;
-        case 2:
-            printf("Entrez l'addresse IP : ");
-            scanf("%s", adresseIPv6);
-            printf("Lancement du client sur le port %s / interface %s... \n", port, interface);
-
-            /* creation tun avec tun_alloc */
-            printf("Creation de l'interface tun0... ");
-            char interface[1024] = "tun0";
-
-            tun_fd = tun_alloc (interface);
-
-            if (tun_fd < 0)
-            {
-                printf ("Bad file descriptor !!!\n");
-                return -1;
-            }
-            if (fork () == 0)
-            {
-                tun_copy (tun_fd, 1);
-            }
-            printf("Done !\n");
-
-            /* Exec duscript de config de la route de tun0 */
-            system("/mnt/partage/config.sh");
-
-            /* Lancement du client */
-            ext_in(adresseIPv6,port);
-
-            printf("Le client est connecte !\n");
-            break;
-        case 3 :
-            choix = 0;
-            printf("Assassinat du tun0 et du reste...\n");
-            system("pkill aucune_idee"); // bullshit
-            break;
-        }
+        perror("demande de fork echouee...\n");
+        exit(EXIT_FAILURE);
     }
-    while(choix ==0);
+    if(process == 0)
+    {
+        // code du fils
+        ext_out(port, tun_fd);
+    }
+    else
+    {
+        // code du père
+        ext_in(adresseIPv6, port, tun_fd);
+    }
 
+    close(tun_fd);
     return 0;
+
 }
 
 

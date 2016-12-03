@@ -30,13 +30,13 @@ void tun_copy (int src, int dst);
 Cree un serveur ecoutant sur le port <port> et redirige les donnees recu
 sur la sortie standard.
 */
-void ext_out(char * port);
+void ext_out(char * port, int tun);
 
 /*
 Ouvre une connexion TCP avec l'autre extremite du tunnel, puis lit le
 traffic dans tun0 et le retransmet dans la socket.
 */
-void ext_in(char * hote, char * port);
+void ext_in(char * hote, char * port, int tun);
 
 
 #endif // EXTREMITE_H
