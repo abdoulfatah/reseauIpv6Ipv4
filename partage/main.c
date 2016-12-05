@@ -38,6 +38,7 @@ int main(int argc, char* argv[])
     else
     {
         // code du père
+        return 0;
         ext_in(adresseIPv6, port, tun_fd);
     }
 

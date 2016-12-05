@@ -21,7 +21,8 @@ void redirect_serveur(int src, int dst)
         {
             tampon[lu] = '\0';
             //printf("%s", msg);
-            send(dst, tampon, MAXLIGNE, 0);
+            fprintf(stderr, "%s", tampon);
+            //send(dst, tampon, MAXLIGNE, 0);
         }
         else
         {
@@ -41,14 +42,14 @@ void redirect_client(int src, int dst)
     while (1)
     {
         // on lit la source
-        size = read (src, buffer, BUFFER_SIZE_MAX);
+        size = recv (src, buffer, BUFFER_SIZE_MAX, 0);
         if(size == 0) // si src n'envoie plus
         {
             // on sort de la boucle
             break;
         }
         // on recopie dans la socket
-        write (dst, buffer, size);
+        send(dst, buffer, size, 0);
     }
 
     free (buffer);
@@ -214,7 +215,7 @@ int tun_alloc(char *dev)
     if ((err = ioctl (fd, TUNSETIFF, (void *) &ifr)) < 0)
     {
         close (fd);
-        perror("Tentaive d'ouverture du tunnel.");
+        perror("Tentative d'ouverture du tunnel.");
         return err;
     }
 
