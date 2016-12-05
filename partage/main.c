@@ -13,7 +13,6 @@ int main(int argc, char* argv[])
 
     int tun_fd;
     char interface[] = INTERFACE_NAME;
-
     char cmd[128];
 
     // allocation du tunnel
@@ -22,6 +21,11 @@ int main(int argc, char* argv[])
     // configuration du tunnnel
     sprintf(cmd, "sudo /vagrant/tun_config.sh %s", interface);
     system(cmd);
+
+
+    //ext_in(adresseIPv6, port, tun_fd);
+    //return 0;
+
 
     // fork
     int process = fork();
@@ -34,13 +38,13 @@ int main(int argc, char* argv[])
     {
         // code du fils
         ext_out(port, tun_fd);
+
+        exit(0);
     }
-    else
-    {
         // code du père
-        return 0;
-        ext_in(adresseIPv6, port, tun_fd);
-    }
+        sleep(5);
+    ext_in(adresseIPv6, port, tun_fd);
+
 
     close(tun_fd);
     return 0;

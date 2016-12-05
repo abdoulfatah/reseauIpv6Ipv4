@@ -21,8 +21,8 @@ void redirect_serveur(int src, int dst)
         {
             tampon[lu] = '\0';
             //printf("%s", msg);
-            fprintf(stderr, "%s", tampon);
-            //send(dst, tampon, MAXLIGNE, 0);
+            //fprintf(stderr, "%s", tampon);
+            send(dst, tampon, MAXLIGNE, 0);
         }
         else
         {
@@ -79,7 +79,7 @@ void ext_out(char * port, int tun)
     }
 
     /* Création de la socket, de type TCP / IP */
-    if ((s=socket(resol->ai_family,resol->ai_socktype,resol->ai_protocol))<0)
+    if ((s = socket(resol->ai_family, resol->ai_socktype, resol->ai_protocol)) < 0)
     {
         perror("allocation de socket");
         exit(3);
@@ -142,8 +142,8 @@ void ext_out(char * port, int tun)
 
 void ext_in(char * hote, char * port, int tun)
 {
+    char ip[NI_MAXHOST], ipstr[INET6_ADDRSTRLEN];
     void *addr;
-    char ip[NI_MAXHOST], ipstr[INET6_ADDRSTRLEN];; /* adresse IPv4 en notation pointée */
     struct addrinfo *resol; /* struct pour la résolution de nom */
     int s; /* descripteur de socket */
 
@@ -154,7 +154,6 @@ void ext_in(char * hote, char * port, int tun)
         exit(2);
     }
 
-    /****/
     struct sockaddr_in6 *ipv6 = (struct sockaddr_in6 *)resol->ai_addr;
     addr = &(ipv6->sin6_addr);
     // conversion de l'adresse IP en une chaîne de caractères
@@ -162,7 +161,6 @@ void ext_in(char * hote, char * port, int tun)
 
     /* On extrait l'addresse IP */
     sprintf(ip,"%s",ipstr);
-
 
     /* Création de la socket, de type TCP / IP */
     /* On ne considère que la première adresse renvoyée par getaddrinfo */
