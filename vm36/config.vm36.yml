@@ -22,16 +22,12 @@
     
   - shell: nmcli connection add ifname eth1 con-name ansible-eth1 type ethernet ip6 fc00:1234:2::36/64 gw6 fc00:1234:2::26
   
-      # IPv6 tun0
-  - shell: nmcli connection add ifname tun0 con-name tun0 type ethernet ip4 172.16.2.10/28
-  
   #table de routage
-  - shell: sudo ip route add 172.16.2.128/28 via 172.16.2.183
-  - shell: sudo ip route add 172.16.2.144/28 via 172.16.2.183
-  - shell: sudo ip route add 172.16.2.160/28 via 172.16.2.183
+  - shell: sudo ip -6 route add fc00:1234:1::/64 via fc00:1234:2::26 
   
   # IP FORWARD
   # Set ip forwarding on in /proc and in the sysctl file and reload if necessary
   - sysctl: name="net.ipv4.ip_forward" value=1 sysctl_set=yes state=present reload=yes
+  - shell : sysctl -w net.ipv4.ip_forward=1
     
     

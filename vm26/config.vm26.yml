@@ -22,6 +22,4 @@
     - shell: nmcli connection add ifname eth1 con-name ansible-eth1 type ethernet ip6 fc00:1234:1::26/64
     - shell: nmcli connection add ifname eth2 con-name ansible-eth2 type ethernet ip6 fc00:1234:2::26/64
     
-    
-    
     - shell : sysctl -w net.ipv6.conf.all.forwarding=1

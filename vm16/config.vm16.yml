@@ -26,7 +26,7 @@
   # table de routage
   #sudo ip route add 172.16.2.128/28 via 172.16.2.151
   #sudo ip route add 172.16.2.160/28 via 172.16.2.151
-  - shell: sudo ip route add 172.16.2.176/28 via 172.16.2.151
   
   # IP forward
   - shell : sysctl -w net.ipv6.conf.all.forwarding=1
+  - shell : sysctl -w net.ipv4.ip_forward=1

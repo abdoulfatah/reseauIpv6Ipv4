@@ -16,10 +16,10 @@
     ignore_errors: True
 
   
-  # IPv4 eth2
-  - shell: nmcli connection add ifname eth1 con-name ansible-eth1 type ethernet ip4 172.16.2.131/28 gw4 172.16.2.132
   # IPv4 eth1
-  - shell: nmcli connection add ifname eth2 con-name ansible-eth2 type ethernet ip4 172.16.2.151/28
+  - shell: nmcli connection add ifname eth1 con-name ansible-eth1 type ethernet ip4 172.16.2.131/28 
+  # IPv4 eth2
+  - shell: nmcli connection add ifname eth2 con-name ansible-eth2 type ethernet ip4 172.16.2.151/28 gw4 172.16.2.156
   
   #table de routage
   - shell: sudo ip route add 172.16.2.176/28 via 172.16.2.156
