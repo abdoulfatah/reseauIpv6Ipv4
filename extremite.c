@@ -1,5 +1,7 @@
 #include "extremite.h"
 
+
+
 //=============================================================================
 // Prototypes des fonctions privees
 
@@ -16,12 +18,11 @@ void redirect_serveur(int src, int dst)
 
     do
     {
-        lu = recv(src,tampon,MAXLIGNE,0);
+        lu = read(src,tampon,MAXLIGNE);
+        tampon[lu] = '\0';
         if (lu > 0 )
         {
-            tampon[lu] = '\0';
-            //printf("%s", msg);
-            send(dst, tampon, MAXLIGNE, 0);
+            write(dst, tampon, lu+1);
         }
         else
         {
@@ -30,7 +31,7 @@ void redirect_serveur(int src, int dst)
     }
     while ( 1 );
 
-    close(dst);
+  //  close(dst);
 }
 
 void redirect_client(int src, int dst)
@@ -51,7 +52,7 @@ void redirect_client(int src, int dst)
         write (dst, buffer, size);
     }
 
-    free (buffer);
+   // free (buffer);
 }
 
 

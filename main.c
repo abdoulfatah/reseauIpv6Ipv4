@@ -18,10 +18,12 @@ int main(int argc, char* argv[])
 
     // allocation du tunnel
     tun_fd = tun_alloc(interface);
+    sleep(1);
 
     // configuration du tunnnel
     sprintf(cmd, "sudo /vagrant/tun_config.sh %s", interface);
     system(cmd);
+     sleep(1);
 
     // fork
     int process = fork();
