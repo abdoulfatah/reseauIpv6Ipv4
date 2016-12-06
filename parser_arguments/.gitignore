@@ -1,0 +1,3 @@
+# pour ignorer les fichiers objets de compilations
+*.o
+
