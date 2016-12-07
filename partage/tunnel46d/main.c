@@ -4,21 +4,22 @@
 #include "arguments.h"
 #include "extremite.h"
 
-#define PORT            "1234"
-#define INTERFACE_NAME  "tun0"
 
 int main(int argc, char* argv[])
 {
     // parsing des arguments
-    Arguments arg;
-    parseArguments(argc, argv, &arg);
+    Arguments args;
+    parseArguments(argc, argv, &args);
 
     // definitions des variables
-    char port[] = PORT;
-    char * adresseIPv6 = argv[1];
+    char port[ARGUMENTS_PORT_STR_SIZE];
+    sprintf(port, "%s", args.arg_outport);
+    char adresseIPv6[ARGUMENTS_IP_STR_SIZE];
+    sprintf(adresseIPv6, "%s", args.arg_inip);
 
     int tun_fd;
-    char interface[] = INTERFACE_NAME;
+    char interface[ARGUMENTS_TUN_STR_SIZE];
+    sprintf(interface, "%s", args.arg_tun);
 
     char cmd[128];
 

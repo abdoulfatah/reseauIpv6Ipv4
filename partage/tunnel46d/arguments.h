@@ -19,17 +19,19 @@ Reconnait le format suivant dans un fichier dont le nom est donné en argument.
 #include <stdlib.h>
 #include <string.h>
 
-#define SIZE_READ_BUFFER 64
-
+#define SIZE_READ_BUFFER        128
+#define ARGUMENTS_IP_STR_SIZE   32
+#define ARGUMENTS_PORT_STR_SIZE 16
+#define ARGUMENTS_TUN_STR_SIZE  32
 
 typedef struct
 {
-    char arg_tun[32];
-    char arg_tunip[16];
-    char arg_inip[16];
-    int arg_inport;
-    char arg_outip[16];
-    int arg_outport;
+    char arg_tun[ARGUMENTS_TUN_STR_SIZE];
+    char arg_tunip[ARGUMENTS_IP_STR_SIZE];
+    char arg_inip[ARGUMENTS_IP_STR_SIZE];
+    char arg_inport[ARGUMENTS_PORT_STR_SIZE];
+    char arg_outip[ARGUMENTS_IP_STR_SIZE];
+    char arg_outport[ARGUMENTS_PORT_STR_SIZE];
 } Arguments;
 
 // split les arguments autour d'un '='

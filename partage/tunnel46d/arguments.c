@@ -56,11 +56,11 @@ void parseArguments(int argc, char ** argv, Arguments * arg)
         else if(strcmp(argname, "inip") == 0)
             sprintf(arg->arg_inip, "%s", argvalue);
         else if(strcmp(argname, "inport") == 0)
-            arg->arg_inport = atoi(argvalue);
+            sprintf(arg->arg_inport, "%s", argvalue);
         else if(strcmp(argname, "outip") == 0)
             sprintf(arg->arg_outip, "%s", argvalue);
         else if(strcmp(argname, "outport") == 0)
-            arg->arg_outport = atoi(argvalue);
+            sprintf(arg->arg_outport, "%s", argvalue);
         else
             fprintf(stderr, "Erreur : erreur dans le fichier de configuration : impossible de reconnaitre l'argument \"%s\"\n", argvalue);
     }

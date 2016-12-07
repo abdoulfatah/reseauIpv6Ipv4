@@ -1,0 +1,3 @@
+# ignore les fichiers de compilation
+tunnel46d
+*.o
